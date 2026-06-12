@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Korean Verb Tense Master</title>
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --bg: #f8fafc;
+            --card: #ffffff;
+            --text: #1e293b;
+            --text-light: #64748b;
+            --success: #16a34a;
+            --error: #dc2626;
+            --border: #e2e8f0;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: var(--bg); color: var(--text); padding: 20px; line-height: 1.6; }
+        .container { max-width: 800px; margin: 0 auto; }
+        header { text-align: center; margin-bottom: 30px; }
+        h1 { color: var(--primary); margin-bottom: 10px; }
+        
+        .nav-tabs { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid var(--border); padding-bottom: 10px; }
+        .tab-btn { background: none; border: none; padding: 10px 20px; font-size: 16px; font-weight: bold; cursor: pointer; color: var(--text-light); border-radius: 5px; }
+        .tab-btn.active { background-color: var(--primary); color: white; }
+
+        .card { background: var(--card); padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        .hidden { display: none !important; }
+
+        /* Grammar Guide Styles */
+        .grammar-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        @media (max-width: 600px) { .grammar-grid { grid-template-columns: 1fr; } }
+        .tense-card { border: 1px solid var(--border); padding: 15px; border-radius: 8px; background: #fafafa; }
+        .tense-card h4 { color: var(--primary); margin-bottom: 8px; }
+        
+        /* Table Styles */
+        .table-responsive { overflow-x: auto; margin-top: 20px; }
+        .verb-list-table { width: 100%; border-collapse: collapse; min-width: 800px; }
+        .verb-list-table th, .verb-list-table td { padding: 10px; border: 1px solid var(--border); text-align: left; font-size: 14px; }
+        .verb-list-table th { background: #f1f5f9; white-space: nowrap; }
+
+        /* Quiz Styles */
+        .quiz-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; font-weight: bold; }
+        .question-box { font-size: 20px; margin-bottom: 20px; background: #f1f5f9; padding: 20px; border-radius: 8px; text-align: center; }
+        
+        /* Multiple Choice Options */
+        .options-grid { display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; }
+        .option-btn { padding: 16px; border: 2px solid var(--border); border-radius: 8px; background: white; font-size: 18px; cursor: pointer; transition: all 0.2s ease; text-align: center; }
+        .option-btn:hover { border-color: var(--primary); background: #f8fafc; }
+        .option-btn.selected { border-color: var(--primary); background: #e0e7ff; font-weight: bold; color: var(--primary); }
+        .option-btn:disabled { cursor: not-allowed; opacity: 0.7; }
+
+        .submit-container { text-align: right; }
+        button.btn { background: var(--primary); color: white; border: none; padding: 12px 24px; border-radius: 6px; font-size: 16px; cursor: pointer; font-weight: bold; }
+        button.btn:hover { background: var(--primary-hover); }
+        button.btn:disabled { background: var(--text-light); cursor: not-allowed; }
+        
+        .feedback { padding: 15px; border-radius: 6px; margin-bottom: 20px; display: none; }
+        .feedback.correct { background: #dcfce7; color: var(--success); display: block; border: 1px solid #bbf7d0; }
+        .feedback.wrong { background: #fee2e2; color: var(--error); display: block; border: 1px solid #fecaca; }
+        .explanation { margin-top: 10px; font-size: 14px; color: var(--text); }
+
+        /* Review Styles */
+        .review-item { border-left: 4px solid var(--error); padding-left: 15px; margin-bottom: 15px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Korean Verb Tense Master</h1>
+        <p>Learn and practice 22 essential Korean verbs across 6 fundamental tenses (Polite Casual -어요/아요 style).</p>
+    </header>
+
+    <div class="nav-tabs">
+        <button class="tab-btn active" onclick="switchTab('learn')">1. Learn Grammar</button>
+        <button class="tab-btn" onclick="switchTab('quiz')">2. Practice Quiz</button>
+        <button class="tab-btn" onclick="switchTab('review')">3. Review Mistakes (<span id="review-count">0</span>)</button>
+    </div>
+
+    <div id="tab-learn" class="tab-content">
+        <div class="card">
+            <h2>Tense Conjugation Rules</h2>
+            <p style="margin-bottom: 20px; color: var(--text-light);">All conjugations here use the standard polite informal style (아요/어요), perfect for everyday communication.</p>
+            
+            <div class="grammar-grid">
+                <div class="tense-card">
+                    <h4>1. Present Tense (-아요/어요)</h4>
+                    <p>• If verb stem ends in <b>ㅏ</b> or <b>ㅗ</b> → add <b>-아요</b></p>
+                    <p>• For other vowels → add <b>-어요</b></p>
+                    <p>• <b>하다</b> verbs change to <b>해요</b></p>
+                </div>
+                <div class="tense-card">
+                    <h4>2. Past Tense (-았어요/었어요)</h4>
+                    <p>• Same vowel rules as present tense, but insert the double 'ㅆ' bottom consonant.</p>
+                    <p>• e.g., 알다 → 알아 + 았어요 = <b>알았어요</b></p>
+                </div>
+                <div class="tense-card">
+                    <h4>3. Future Tense (-(으)ㄹ 거예요)</h4>
+                    <p>• Stem ends in vowel → add <b>-ㄹ 거예요</b></p>
+                    <p>• Stem ends in consonant → add <b>-을 거예요</b></p>
+                </div>
+                <div class="tense-card">
+                    <h4>4. Present Progressive (-고 있어요)</h4>
+                    <p>• Simply drop <b>다</b> and attach <b>-고 있어요</b> to the stem.</p>
+                    <p>• Means "am/is/are doing".</p>
+                </div>
+                <div class="tense-card">
+                    <h4>5. Past Progressive (-고 있었어요)</h4>
+                    <p>• Drop <b>다</b> and attach <b>-고 있었어요</b> to the stem.</p>
+                    <p>• Means "was/were doing".</p>
+                </div>
+                <div class="tense-card">
+                    <h4>6. Future Progressive (-고 있을 거예요)</h4>
+                    <p>• Drop <b>다</b> and attach <b>-고 있을 거예요</b> to the stem.</p>
+                    <p>• Means "will be doing".</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Word Bank (22 Core Verbs)</h2>
+            <div class="table-responsive">
+                <table class="verb-list-table" id="verbTable">
+                    <thead>
+                        <tr>
+                            <th>Infinitive</th>
+                            <th>Meaning</th>
+                            <th>Present<br>(현재)</th>
+                            <th>Past<br>(과거)</th>
+                            <th>Future<br>(미래)</th>
+                            <th>Pres. Prog<br>(현재진행)</th>
+                            <th>Past Prog<br>(과거진행)</th>
+                            <th>Fut. Prog<br>(미래진행)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div id="tab-quiz" class="tab-content hidden">
+        <div class="card">
+            <div class="quiz-header">
+                <div>Score: <span id="score">0</span></div>
+                <div>Question <span id="q-current">1</span></div>
+            </div>
+            
+            <div class="question-box" id="question-text">
+                Loading question...
+            </div>
+
+            <div class="options-grid" id="options-container">
+                </div>
+
+            <div class="submit-container" id="submit-container">
+                <button class="btn" id="submit-btn" onclick="checkAnswer()" disabled>Submit Answer</button>
+            </div>
+
+            <div id="quiz-feedback" class="feedback">
+                <span id="feedback-status"></span>
+                <div id="feedback-explanation" class="explanation"></div>
+            </div>
+
+            <button class="btn hidden" id="next-btn" onclick="nextQuestion()" style="background:#0284c7; width: 100%;">Next Question →</button>
+        </div>
+    </div>
+
+    <div id="tab-review" class="tab-content hidden">
+        <div class="card">
+            <h2>Your Review Closet</h2>
+            <p style="margin-bottom: 20px; color: var(--text-light);">Verbs you missed will appear here automatically with personalized explanations until you test them again.</p>
+            <div id="review-list">
+                <p style="color: var(--success); font-weight: bold;">🎉 No mistakes yet! Keep up the good work.</p>
+            </div>
+            <button class="btn hidden" id="start-review-quiz-btn" onclick="startReviewQuiz()" style="margin-top:20px; background:#e11d48;">Practice Only Mistakes</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 22 Verbs Database
+    const verbs = [
+        { inf: "배우다", eng: "to learn", pres: "배워요", rules: "regular" },
+        { inf: "공부하다", eng: "to study", pres: "공부해요", rules: "hada" },
+        { inf: "만나다", eng: "to meet", pres: "만나요", rules: "regular" },
+        { inf: "알다", eng: "to know", pres: "알아요", rules: "regular" },
+        { inf: "사다", eng: "to buy", pres: "사요", rules: "regular" },
+        { inf: "먹다", eng: "to eat", pres: "먹어요", rules: "regular" },
+        { inf: "읽다", eng: "to read", pres: "읽어요", rules: "regular" },
+        { inf: "쓰다", eng: "to write/use", pres: "써요", rules: "으-irregular" },
+        { inf: "자다", eng: "to sleep", pres: "자요", rules: "regular" },
+        { inf: "앉다", eng: "to sit", pres: "앉아요", rules: "regular" },
+        { inf: "열다", eng: "to open", pres: "열어요", rules: "ㄹ-irregular" },
+        { inf: "닫다", eng: "to close", pres: "닫아요", rules: "regular" },
+        { inf: "말하다", eng: "to speak", pres: "말해요", rules: "hada" },
+        { inf: "듣다", eng: "to listen/hear", pres: "들어요", rules: "ㄷ-irregular" },
+        { inf: "보다", eng: "to see/watch", pres: "봐요", rules: "regular" },
+        { inf: "마시다", eng: "to drink", pres: "마셔요", rules: "regular" },
+        { inf: "가다", eng: "to go", pres: "가요", rules: "regular" },
+        { inf: "하다", eng: "to do", pres: "해요", rules: "hada" },
+        { inf: "오다", eng: "to come", pres: "와요", rules: "regular" },
+        { inf: "있다", eng: "to have/exist", pres: "있어요", rules: "regular" },
+        { inf: "달리다", eng: "to run", pres: "달려요", rules: "regular" },
+        { inf: "걷다", eng: "to walk", pres: "걸어요", rules: "ㄷ-irregular" }
+    ];
+
+    const tenses = [
+        { id: "past", name: "Past Tense", eng: "did / practiced" },
+        { id: "present", name: "Present Tense", eng: "do / practice" },
+        { id: "future", name: "Future Tense", eng: "will do / will practice" },
+        { id: "pres_prog", name: "Present Progressive", eng: "am/is/are doing" },
+        { id: "past_prog", name: "Past Progressive", eng: "was/were doing" },
+        { id: "fut_prog", name: "Future Progressive", eng: "will be doing" }
+    ];
+
+    let mistakes = [];
+    let currentQuestion = null;
+    let score = 0;
+    let questionCounter = 1;
+    let isReviewQuizMode = false;
+    let selectedAnswer = null;
+
+    // Helper Engine for Conjugation
+    function getConjugation(verb, tenseId) {
+        const stem = verb.inf.slice(0, -1);
+        
+        if (tenseId === "pres_prog") return stem + "고 있어요";
+        if (tenseId === "past_prog") return stem + "고 있었어요";
+        if (tenseId === "fut_prog") return stem + "고 있을 거예요";
+        if (tenseId === "present") return verb.pres;
+
+        if (tenseId === "past") {
+            if (verb.inf === "있다") return "있었어요";
+            if (verb.rules === "hada") return verb.inf.replace("하다", "했어요");
+            if (verb.inf === "오다") return "왔어요";
+            if (verb.inf === "보다") return "봤어요";
+            if (verb.inf === "가다") return "갔어요";
+            if (verb.inf === "만나다") return "만났어요";
+            if (verb.inf === "사다") return "샀어요";
+            if (verb.inf === "자다") return "잤어요";
+            if (verb.inf === "배우다") return "배웠어요";
+	    if (verb.inf === "마시다") return "마셨어요";
+            if (verb.inf === "달리다") return "달렸어요";
+            if (verb.rules === "으-irregular") return "썼어요";
+            if (verb.rules === "ㄷ-irregular") {
+                if(verb.inf === "듣다") return "들었어요";
+                if(verb.inf === "걷다") return "걸었어요";
+            }
+            if (verb.pres.endsWith("어요")) return stem + "었어요";
+            else if (verb.pres.endsWith("아요")) return stem + "았어요";
+            return stem + "았/었어 요"; 
+        }
+
+        if (tenseId === "future") {
+            if (verb.rules === "ㄹ-irregular" || verb.inf === "열다") return stem + " 거예요";
+            const lastChar = stem.charCodeAt(stem.length - 1);
+            const hasPatchim = (lastChar - 44032) % 28 !== 0;
+
+            if (verb.rules === "ㄷ-irregular") return stem.replace("ㄷ", "ㄹ") + "을 거예요";
+            if (verb.rules === "으-irregular") return "쓸 거예요";
+
+            if (hasPatchim) {
+                return stem + "을 거예요";
+            } else {
+                // 한글 유니코드 원리를 활용하여 받침이 없는 글자에 'ㄹ' 받침(종성 인덱스 8)을 병합합니다.
+                const mergedChar = String.fromCharCode(lastChar + 8);
+                return stem.slice(0, -1) + mergedChar + " 거예요";
+            }
+        }
+    }
+
+    // Initialize Web App Data View
+    function init() {
+        const tbody = document.querySelector("#verbTable tbody");
+        verbs.forEach(v => {
+            tbody.innerHTML += `<tr>
+                <td><b>${v.inf}</b></td>
+                <td>${v.eng}</td>
+                <td><span style="color:var(--primary); font-weight:bold;">${getConjugation(v, "present")}</span></td>
+                <td>${getConjugation(v, "past")}</td>
+                <td>${getConjugation(v, "future")}</td>
+                <td>${getConjugation(v, "pres_prog")}</td>
+                <td>${getConjugation(v, "past_prog")}</td>
+                <td>${getConjugation(v, "fut_prog")}</td>
+            </tr>`;
+        });
+        
+        generateQuestion();
+    }
+
+    function switchTab(tabName) {
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(content => content.classList.add('hidden'));
+        
+        event.target.classList.add('active');
+        document.getElementById(`tab-${tabName}`).classList.remove('hidden');
+
+        if(tabName === 'review') renderReviewList();
+    }
+
+    // Generate Explanations for Mistakes
+    function getExplanation(verb, tense) {
+        if (tense.id.includes("prog")) {
+            return `Progressive tenses in Korean are fully regular! Simply remove '다' from the dictionary form <b>${verb.inf}</b> to get the stem [${verb.inf.slice(0,-1)}], then attach the grammar block directly. No vowel merges or patchim rules apply here.`;
+        }
+        if (tense.id === "present") {
+            if (verb.rules === "hada") return `All '하다' verbs dynamically swap '하다' to <b>해요</b> in the polite casual present tense.`;
+            if (verb.rules === "ㄷ-irregular") return `This is a ㄷ-irregular verb. When meeting a suffix starting with a vowel, the bottom <b>ㄷ</b> transforms into <b>ㄹ</b> (듣다 → 들어요).`;
+            if (verb.rules === "으-irregular") return `This is an 으-irregular verb. The vowel <b>ㅡ</b> drops completely when interacting with '어/아' components (쓰다 + 어요 → 써요).`;
+            return `Standard present tense rules apply. If the stem ends with ㅏ or ㅗ, merge/add 아요. Otherwise, add 어요.`;
+        }
+        if (tense.id === "past") {
+            if (verb.inf === "알다") return `As requested: <b>알다</b> features an 'ㅏ' vowel, meaning it absorbs <b>-았어요</b> to synthesize cleanly into <b>알았어요</b>.`;
+            if (verb.rules === "hada") return `'하다' verbs consistently mutate to <b>했어요</b> in the past tense.`;
+            if (verb.rules === "ㄷ-irregular") return `The ㄷ-irregular rule triggers because the past suffix starts with a vowel, converting ㄷ into ㄹ first (듣다 → 들 + 었어요 → 들었어요).`;
+            return `Past tense utilizes matching rules from the present tense base, but locks down the double past marker <b>ㅆ</b> at the bottom.`;
+        }
+        if (tense.id === "future") {
+            if (verb.inf === "열다") return `For stems natively ending in <b>ㄹ</b>, do not add an extra ㄹ. Simply lock '거예요' right next to it (열 거예요).`;
+            if (verb.rules === "ㄷ-irregular") return `The bottom ㄷ shifts to ㄹ when attaching standard future block variables (e.g. 듣다 → 들을 거예요).`;
+            return `Look at the stem. Stems without a bottom consonant compress cleanly with <b>-ㄹ 거예요</b>. Consonant-heavy stems with a patchim require the buffer vowel: <b>-을 거예요</b>.`;
+        }
+        return "";
+    }
+
+    // Quiz Core Engine
+    function generateQuestion() {
+        // Reset states
+        selectedAnswer = null;
+        document.getElementById("quiz-feedback").className = "feedback";
+        document.getElementById("next-btn").classList.add("hidden");
+        document.getElementById("submit-container").classList.remove("hidden");
+        document.getElementById("submit-btn").disabled = true;
+        
+        let pool = isReviewQuizMode && mistakes.length > 0 ? mistakes : verbs;
+        const randomVerb = pool[Math.floor(Math.random() * pool.length)];
+        const randomTense = tenses[Math.floor(Math.random() * tenses.length)];
+
+        currentQuestion = {
+            verb: randomVerb,
+            tense: randomTense,
+            correctAnswer: getConjugation(randomVerb, randomTense.id).trim()
+        };
+
+        document.getElementById("q-current").innerText = questionCounter;
+        document.getElementById("question-text").innerHTML = `Conjugate the verb <b style="color:var(--primary); font-size:24px;">${currentQuestion.verb.inf}</b> (${currentQuestion.verb.eng}) into the <b style="color:#0284c7;">${currentQuestion.tense.name}</b> (${currentQuestion.tense.eng}).`;
+
+        // Generate 3 unique options (1 correct, 2 distractors)
+        let optionsSet = new Set([currentQuestion.correctAnswer]);
+        
+        // Distractor 1: Same verb, different tense
+        let otherTenses = tenses.filter(t => t.id !== randomTense.id).sort(() => Math.random() - 0.5);
+        for(let t of otherTenses) {
+            let distractor1 = getConjugation(randomVerb, t.id).trim();
+            if(!optionsSet.has(distractor1)) { optionsSet.add(distractor1); break; }
+        }
+
+        // Distractor 2: Different verb, same tense
+        let otherVerbs = pool.filter(v => v.inf !== randomVerb.inf).sort(() => Math.random() - 0.5);
+        if(otherVerbs.length === 0) otherVerbs = verbs.filter(v => v.inf !== randomVerb.inf).sort(() => Math.random() - 0.5); // Fallback
+        
+        for(let v of otherVerbs) {
+            let distractor2 = getConjugation(v, randomTense.id).trim();
+            if(!optionsSet.has(distractor2)) { optionsSet.add(distractor2); break; }
+        }
+
+        // Failsafe: Ensure we have exactly 3 options
+        while(optionsSet.size < 3) {
+            let fallbackVerb = verbs[Math.floor(Math.random() * verbs.length)];
+            let fallbackTense = tenses[Math.floor(Math.random() * tenses.length)];
+            optionsSet.add(getConjugation(fallbackVerb, fallbackTense.id).trim());
+        }
+
+        let finalOptions = Array.from(optionsSet).sort(() => Math.random() - 0.5); // Shuffle
+        
+        // Render Options
+        let optionsHtml = '';
+        finalOptions.forEach((opt, idx) => {
+            optionsHtml += `<button class="option-btn" onclick="selectOption('${opt}', this)">${opt}</button>`;
+        });
+        document.getElementById("options-container").innerHTML = optionsHtml;
+    }
+
+    // Handle user selection
+    function selectOption(answerText, btnElement) {
+        // Prevent selection if already submitted
+        if(document.getElementById("submit-container").classList.contains("hidden")) return;
+
+        // Visual update
+        document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+        btnElement.classList.add('selected');
+        
+        // Set state
+        selectedAnswer = answerText;
+        document.getElementById("submit-btn").disabled = false;
+    }
+
+    function checkAnswer() {
+        if (!selectedAnswer) return;
+
+        const correctAns = currentQuestion.correctAnswer;
+        const feedbackBox = document.getElementById("quiz-feedback");
+        const statusSpan = document.getElementById("feedback-status");
+        const expDiv = document.getElementById("feedback-explanation");
+
+        // Disable all option buttons
+        document.querySelectorAll('.option-btn').forEach(b => b.disabled = true);
+
+        if (selectedAnswer === correctAns) {
+            feedbackBox.className = "feedback correct";
+            statusSpan.innerText = "✨ Correct! Excellent job.";
+            expDiv.innerHTML = `<b>${currentQuestion.verb.inf}</b> → <b>${correctAns}</b>`;
+            if(!isReviewQuizMode) score += 10;
+            document.getElementById("score").innerText = score;
+        } else {
+            feedbackBox.className = "feedback wrong";
+            statusSpan.innerHTML = `❌ Incorrect. Expected: <b style="font-size:18px;">${correctAns}</b>`;
+            
+            const explanationText = getExplanation(currentQuestion.verb, currentQuestion.tense);
+            expDiv.innerHTML = `Your answer: <span style="text-decoration:line-through; color:var(--error);">${selectedAnswer}</span><br><br><b>Grammar Note:</b> ${explanationText}`;
+
+            if (!mistakes.some(m => m.inf === currentQuestion.verb.inf)) {
+                mistakes.push(currentQuestion.verb);
+                document.getElementById("review-count").innerText = mistakes.length;
+            }
+        }
+
+        document.getElementById("submit-container").classList.add("hidden");
+        document.getElementById("next-btn").classList.remove("hidden");
+    }
+
+    function nextQuestion() {
+        questionCounter++;
+        generateQuestion();
+    }
+
+    // Review Manager
+    function renderReviewList() {
+        const container = document.getElementById("review-list");
+        const btn = document.getElementById("start-review-quiz-btn");
+        
+        if (mistakes.length === 0) {
+            container.innerHTML = `<p style="color: var(--success); font-weight: bold;">🎉 No mistakes yet! Keep up the good work.</p>`;
+            btn.classList.add("hidden");
+            return;
+        }
+
+        btn.classList.remove("hidden");
+        container.innerHTML = "";
+        
+        mistakes.forEach((verb, idx) => {
+            container.innerHTML += `
+                <div class="review-item">
+                    <b>${verb.inf}</b> (${verb.eng}) - <span style="color:var(--text-light)">Needs Focus</span>
+                    <p style="font-size: 14px; margin-top:5px; color:#475569;">
+                        Practice tip: Pay attention to its core present form: <b>${verb.pres}</b> and type profile: <i>${verb.rules}</i>.
+                    </p>
+                </div>
+            `;
+        });
+    }
+
+    function startReviewQuiz() {
+        isReviewQuizMode = true;
+        questionCounter = 1;
+        switchTab('quiz');
+        generateQuestion();
+        alert("Entering custom Review Quiz Mode: Questions will only pull from verbs you previously missed!");
+    }
+
+    window.onload = init;
+</script>
+</body>
+</html>
